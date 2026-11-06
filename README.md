@@ -1,33 +1,31 @@
 # Campus ticket reporter
 
-A small Python utility for a university IT team's weekly service review. All 80 tickets describe a fictional North River University. They are synthetic teaching examples, not JHU operational data.
+Python 3 standard-library utility for 80 fictional North River University tickets. This is teaching data, not JHU operational data. The reporting snapshot is November 1, 2026; see `data_dictionary.md` for the metric definitions and `developer_brief.md` for acceptance criteria.
 
-## Start here
+## Run
 
-`main` contains the original text-reporting utility and ten baseline tests. The workshop task is to add useful JSON output while preserving the existing behavior.
-
-| File | Purpose |
-| --- | --- |
-| `ticket_report.py` | Starter reporting utility |
-| `test_ticket_report.py` | Baseline tests |
-| `campus_tickets.csv` | 80 fictional tickets |
-| `data_dictionary.md` | Field meanings and metric definitions |
-| `developer_brief.md` | Requested improvement and acceptance criteria |
-
-## Run the starter
-
-Python 3 is required. No third-party packages or network access are needed by the utility.
+From the repository root:
 
 ```sh
 python3 -m unittest -v
 python3 ticket_report.py campus_tickets.csv
+python3 ticket_report.py campus_tickets.csv --format json
 python3 ticket_report.py campus_tickets.csv --service VPN
+python3 ticket_report.py campus_tickets.csv --service VPN --format json
 ```
 
-The starter intentionally has no `--format json` option. Read the developer brief before making changes.
+`--format text` is the default. `--service` accepts Accounts, Classroom AV, LMS, Network, Research Computing, or VPN. JSON contains `overall` and `per_service` metrics; each has `tickets`, `open`, `aged`, `sla_met`, `sla_pct` (percentage), and `median_hours`. Unavailable rates and medians are `null` in JSON and `N/A` in text. A header-only file has zero totals, null rate and median, and an empty per-service object. Invalid input exits nonzero without printing a partial report.
 
-## Keep demonstrations repeatable
+## Validation results
 
-Start every demonstration from `main`. Use `jhu-ticket-reporter-pre-run` for rehearsal and `jhu-ticket-reporter-live` for the live session. Keep improvements on the selected working branch and do not merge them into `main`.
+Executed locally after the final code change:
 
-The reporting period is October 26 to November 1, 2026. The demonstration is November 6, 2026. See the data dictionary for the snapshot and calculation rules.
+| Command | Exit | Observed result |
+| --- | ---: | --- |
+| `python3 -m unittest -v` | 0 | 14 tests passed |
+| `python3 ticket_report.py campus_tickets.csv` | 0 | All: 80 tickets, 20 Open, 8 aged, 87.5% response SLA, 5 h median |
+| `python3 ticket_report.py campus_tickets.csv --format json` | 0 | Valid JSON; overall 80/20/8, 70 SLA successes, 87.5%, 5 h; six services |
+| `python3 ticket_report.py campus_tickets.csv --service VPN` | 0 | All and VPN: 24 tickets, 6 Open, 4 aged, 87.5%, 5.5 h |
+| `python3 ticket_report.py campus_tickets.csv --service VPN --format json` | 0 | Valid JSON; overall and VPN agree at 24/6/4, 21 SLA successes, 87.5%, 5.5 h |
+
+The tests cover the seven-day boundary, header-only and no-Closed data, invalid fields and duplicate IDs, service filtering, JSON parsing, and rejection of an invalid later row with no partial stdout. The sample CSV remains unchanged. No third-party packages or network calls are used by the utility.

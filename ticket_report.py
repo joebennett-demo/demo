@@ -1,6 +1,7 @@
 """Fictional campus IT teaching example."""
 import argparse
 import csv
+import json
 import statistics
 import sys
 from pathlib import Path
@@ -54,12 +55,23 @@ def report(rows):
         lines.append(f"| {name} | {v['tickets']} | {v['open']} | {v['aged']} | {rate} | {median} |")
     return '\n'.join(lines)
 
+def json_report(rows):
+    """Return overall and per-service metrics with JSON null for unavailable values."""
+    result = {
+        'overall': summarize(rows),
+        'per_service': {
+            service: summarize([r for r in rows if r['service'] == service])
+            for service in sorted({r['service'] for r in rows})
+        },
+    }
+    return json.dumps(result, indent=2, allow_nan=False)
+
 def main():
-    p=argparse.ArgumentParser(description=__doc__); p.add_argument('csv_path');p.add_argument('--service',choices=sorted(SERVICES));a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__); p.add_argument('csv_path');p.add_argument('--service',choices=sorted(SERVICES));p.add_argument('--format',choices=('text','json'),default='text');a=p.parse_args()
     try:
         rows=read_tickets(a.csv_path)
         if a.service: rows=[r for r in rows if r['service']==a.service]
-        result=report(rows)
+        result=json_report(rows) if a.format=='json' else report(rows)
     except (OSError,ValueError) as e:
         print(str(e),file=sys.stderr);return 2
     print(result);return 0
