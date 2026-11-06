@@ -14,7 +14,7 @@ The default `--format text` retains the original table. JSON contains `overall` 
 
 ## Verified results
 
-After the final code changes, all five commands above exited 0. `python3 -m unittest -v` ran **13 tests, OK**, including the seven-day boundary, JSON structure, filtering, empty/no-Closed metrics, invalid rows, and no partial CLI output. The four report commands returned:
+After the final changes, all five commands above exited 0. `python3 -m unittest -v` ran **17 tests, OK**. Checks cover the seven-day boundary (Open versus Closed), empty and header-only files, missing or duplicate IDs with row numbers, invalid fields and late rows, filtering and validation outside the filter, unmatched services, no-Closed selections, JSON structure, and no partial CLI output. The four report commands returned:
 
 | Selection | Format | Tickets | Open | Aged open | SLA met / tickets | First-response SLA | Closed median (h) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
