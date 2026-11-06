@@ -1,0 +1,81 @@
+ticket_id,service,category,priority,status,age_days,response_met_sla,resolution_hours
+DEMO-001,VPN,Access,P2,Open,1,true,
+DEMO-002,VPN,Access,P3,Closed,2,true,3
+DEMO-003,VPN,Access,P3,Closed,3,true,4
+DEMO-004,VPN,Access,P2,Closed,4,true,5
+DEMO-005,VPN,Access,P3,Open,4,true,
+DEMO-006,VPN,Access,P3,Closed,6,true,7
+DEMO-007,VPN,Access,P2,Closed,1,true,8
+DEMO-008,VPN,Access,P3,Closed,2,false,9
+DEMO-009,VPN,Access,P3,Open,7,true,
+DEMO-010,VPN,Access,P2,Closed,4,true,2
+DEMO-011,VPN,Access,P3,Closed,5,true,3
+DEMO-012,VPN,Access,P3,Closed,6,true,4
+DEMO-013,VPN,Access,P2,Open,10,true,
+DEMO-014,VPN,Access,P3,Closed,2,true,6
+DEMO-015,VPN,Access,P3,Closed,3,true,7
+DEMO-016,VPN,Access,P2,Closed,4,false,8
+DEMO-017,VPN,Access,P3,Open,13,true,
+DEMO-018,VPN,Access,P3,Closed,6,true,10
+DEMO-019,VPN,Access,P2,Closed,1,true,2
+DEMO-020,VPN,Access,P3,Closed,2,true,3
+DEMO-021,VPN,Access,P3,Open,16,true,
+DEMO-022,VPN,Access,P2,Closed,4,true,5
+DEMO-023,VPN,Access,P3,Closed,5,true,6
+DEMO-024,VPN,Access,P3,Closed,6,false,7
+DEMO-025,LMS,Service support,P2,Open,1,true,
+DEMO-026,LMS,Service support,P3,Closed,2,true,3
+DEMO-027,LMS,Service support,P3,Closed,3,true,4
+DEMO-028,LMS,Service support,P2,Closed,4,true,5
+DEMO-029,LMS,Service support,P3,Open,4,true,
+DEMO-030,LMS,Service support,P3,Closed,6,true,7
+DEMO-031,LMS,Service support,P2,Closed,1,true,8
+DEMO-032,LMS,Service support,P3,Closed,2,false,9
+DEMO-033,LMS,Service support,P3,Open,7,true,
+DEMO-034,LMS,Service support,P2,Closed,4,true,2
+DEMO-035,LMS,Service support,P3,Closed,5,true,3
+DEMO-036,LMS,Service support,P3,Closed,6,true,4
+DEMO-037,LMS,Service support,P2,Open,10,true,
+DEMO-038,LMS,Service support,P3,Closed,2,true,6
+DEMO-039,LMS,Service support,P3,Closed,3,true,7
+DEMO-040,LMS,Service support,P2,Closed,4,false,8
+DEMO-041,Classroom AV,Service support,P2,Open,1,true,
+DEMO-042,Classroom AV,Service support,P3,Closed,2,true,3
+DEMO-043,Classroom AV,Service support,P3,Closed,3,true,4
+DEMO-044,Classroom AV,Service support,P2,Closed,4,true,5
+DEMO-045,Classroom AV,Service support,P3,Open,4,true,
+DEMO-046,Classroom AV,Service support,P3,Closed,6,true,7
+DEMO-047,Classroom AV,Service support,P2,Closed,1,true,8
+DEMO-048,Classroom AV,Service support,P3,Closed,2,false,9
+DEMO-049,Classroom AV,Service support,P3,Open,7,true,
+DEMO-050,Classroom AV,Service support,P2,Closed,4,true,2
+DEMO-051,Classroom AV,Service support,P3,Closed,5,true,3
+DEMO-052,Classroom AV,Service support,P3,Closed,6,true,4
+DEMO-053,Accounts,Access,P2,Open,1,true,
+DEMO-054,Accounts,Access,P3,Closed,2,true,3
+DEMO-055,Accounts,Access,P3,Closed,3,true,4
+DEMO-056,Accounts,Access,P2,Closed,4,false,5
+DEMO-057,Accounts,Access,P3,Open,4,true,
+DEMO-058,Accounts,Access,P3,Closed,6,true,7
+DEMO-059,Accounts,Access,P2,Closed,1,true,8
+DEMO-060,Accounts,Access,P3,Closed,2,true,9
+DEMO-061,Accounts,Access,P3,Open,7,true,
+DEMO-062,Accounts,Access,P2,Closed,4,true,2
+DEMO-063,Accounts,Access,P3,Closed,5,true,3
+DEMO-064,Accounts,Access,P3,Closed,6,false,4
+DEMO-065,Network,Service support,P2,Open,1,true,
+DEMO-066,Network,Service support,P3,Closed,2,true,3
+DEMO-067,Network,Service support,P3,Closed,3,true,4
+DEMO-068,Network,Service support,P2,Closed,4,true,5
+DEMO-069,Network,Service support,P3,Open,4,true,
+DEMO-070,Network,Service support,P3,Closed,6,true,7
+DEMO-071,Network,Service support,P2,Closed,1,true,8
+DEMO-072,Network,Service support,P3,Closed,2,false,9
+DEMO-073,Research Computing,Service support,P2,Open,1,true,
+DEMO-074,Research Computing,Service support,P3,Closed,2,true,3
+DEMO-075,Research Computing,Service support,P3,Closed,3,true,4
+DEMO-076,Research Computing,Service support,P2,Closed,4,true,5
+DEMO-077,Research Computing,Service support,P3,Open,4,true,
+DEMO-078,Research Computing,Service support,P3,Closed,6,true,7
+DEMO-079,Research Computing,Service support,P2,Closed,1,true,8
+DEMO-080,Research Computing,Service support,P3,Closed,2,false,9
