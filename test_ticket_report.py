@@ -1,6 +1,6 @@
-import csv, pathlib,tempfile,unittest,sys
+import csv, json, pathlib, subprocess, tempfile, unittest, sys
 sys.path.insert(0,str(pathlib.Path(__file__).parent))
-from ticket_report import read_tickets,summarize,report
+from ticket_report import read_tickets,summarize,report,json_report
 
 BASE=dict(ticket_id='T1',service='VPN',category='Access',priority='P2',status='Open',age_days='7',response_met_sla='true',resolution_hours='')
 class TicketReportTests(unittest.TestCase):
@@ -32,4 +32,49 @@ class TicketReportTests(unittest.TestCase):
   with self.assertRaises(ValueError):self.load([BASE,BASE])
  def test_no_closed(self):self.assertIsNone(summarize(self.load([BASE]))['median_hours'])
  def test_aged_boundary(self):self.assertEqual(summarize(self.load([BASE,dict(BASE,ticket_id='T2',age_days='6')]))['aged'],1)
+
+ def test_json_sample_and_filter(self):
+  rows=read_tickets(pathlib.Path(__file__).with_name('campus_tickets.csv'))
+  full=json.loads(json_report(rows))
+  self.assertEqual(full['overall']['tickets'],80)
+  self.assertEqual(full['overall']['sla_met'],70)
+  self.assertEqual(full['overall']['sla_pct'],87.5)
+  self.assertEqual(sum(v['tickets'] for v in full['services'].values()),80)
+  vpn=json.loads(json_report([r for r in rows if r['service']=='VPN']))
+  self.assertEqual(list(vpn['services']),['VPN'])
+  self.assertEqual(vpn['overall'],vpn['services']['VPN'])
+  self.assertEqual((vpn['overall']['tickets'],vpn['overall']['open'],vpn['overall']['aged']),(24,6,4))
+
+ def test_json_unavailable_metrics(self):
+  self.assertEqual(json.loads(json_report([])),{
+   'overall':dict(tickets=0,open=0,aged=0,sla_met=0,sla_pct=None,median_hours=None),
+   'services':{}})
+  one=json.loads(json_report(self.load([BASE])))
+  self.assertIsNone(one['overall']['median_hours'])
+  self.assertEqual(one['overall']['sla_pct'],100.0)
+
+ def test_cli_formats_and_no_partial_output(self):
+  script=pathlib.Path(__file__).with_name('ticket_report.py')
+  source=pathlib.Path(__file__).with_name('campus_tickets.csv')
+  def run(path,*args):
+   return subprocess.run([sys.executable,str(script),str(path),*args],capture_output=True,text=True)
+  default=run(source)
+  explicit=run(source,'--format','text')
+  self.assertEqual(default.returncode,0)
+  self.assertEqual(default.stdout,explicit.stdout)
+  vpn=run(source,'--service','VPN','--format','json')
+  self.assertEqual(vpn.returncode,0)
+  self.assertEqual(json.loads(vpn.stdout)['overall']['tickets'],24)
+  with tempfile.TemporaryDirectory() as d:
+   path=pathlib.Path(d)/'invalid.csv'
+   with path.open('w',newline='') as f:
+    writer=csv.DictWriter(f,fieldnames=list(BASE))
+    writer.writeheader()
+    writer.writerows([BASE,dict(BASE,ticket_id='T2',status='Invalid')])
+   for format_name in ('text','json'):
+    with self.subTest(format=format_name):
+     result=run(path,'--format',format_name,'--service','VPN')
+     self.assertNotEqual(result.returncode,0)
+     self.assertEqual(result.stdout,'')
+     self.assertIn('Row 3:',result.stderr)
 if __name__=='__main__':unittest.main()
