@@ -33,6 +33,12 @@ class TicketReportTests(unittest.TestCase):
  def test_no_closed(self):self.assertIsNone(summarize(self.load([BASE]))['median_hours'])
  def test_aged_boundary(self):self.assertEqual(summarize(self.load([BASE,dict(BASE,ticket_id='T2',age_days='6')]))['aged'],1)
 
+ def test_aged_counts_open_tickets_at_seven_not_closed(self):
+  rows=self.load([dict(BASE, age_days='6'),
+                  dict(BASE, ticket_id='T2', age_days='7'),
+                  dict(BASE, ticket_id='T3', status='Closed', resolution_hours='2', age_days='9')])
+  self.assertEqual((summarize(rows)['open'], summarize(rows)['aged']), (2, 1))
+
 class JsonCliTests(unittest.TestCase):
  def run_cli(self, path, *args):
   return subprocess.run([sys.executable, str(pathlib.Path(__file__).with_name('ticket_report.py')),
@@ -93,4 +99,50 @@ class JsonCliTests(unittest.TestCase):
      self.assertNotEqual(result.returncode, 0)
      self.assertEqual(result.stdout, '')
      self.assertIn('Row 3:', result.stderr)
+
+ def test_empty_file_and_duplicate_later_row_rejected_without_output(self):
+  with tempfile.TemporaryDirectory() as d:
+   path=pathlib.Path(d)/'data.csv'
+   path.write_text('')
+   for format_args in [(), ('--format', 'json')]:
+    with self.subTest(case='empty', format_args=format_args):
+     result=self.run_cli(path, *format_args)
+     self.assertEqual(result.returncode, 2)
+     self.assertEqual(result.stdout, '')
+     self.assertIn('Missing header', result.stderr)
+   with path.open('w', newline='') as f:
+    writer=csv.DictWriter(f, fieldnames=list(BASE));writer.writeheader();writer.writerows([BASE, BASE])
+   for format_args in [(), ('--format', 'json')]:
+    with self.subTest(case='duplicate', format_args=format_args):
+     result=self.run_cli(path, *format_args)
+     self.assertEqual(result.returncode, 2)
+     self.assertEqual(result.stdout, '')
+     self.assertIn('Row 3: missing or duplicate ticket_id', result.stderr)
+
+ def test_filtered_no_closed_and_unselected_invalid_row(self):
+  with tempfile.TemporaryDirectory() as d:
+   path=pathlib.Path(d)/'data.csv'
+   other=dict(BASE, ticket_id='T2', service='LMS', status='Closed',
+              resolution_hours='4', age_days='8', response_met_sla='false')
+   with path.open('w', newline='') as f:
+    writer=csv.DictWriter(f, fieldnames=list(BASE));writer.writeheader();writer.writerows([BASE, other])
+   result=self.run_cli(path, '--service', 'VPN', '--format', 'json')
+   self.assertEqual(result.returncode, 0, result.stderr)
+   selected=json.loads(result.stdout)
+   self.assertEqual(selected['overall'], selected['per_service']['VPN'])
+   self.assertEqual((selected['overall']['tickets'], selected['overall']['aged'],
+                     selected['overall']['sla_pct'], selected['overall']['median_hours']),
+                    (1, 1, 100.0, None))
+   text=self.run_cli(path, '--service', 'VPN')
+   self.assertEqual(text.returncode, 0, text.stderr)
+   self.assertIn('| VPN | 1 | 1 | 1 | 100.0% | N/A |', text.stdout)
+   with path.open('w', newline='') as f:
+    writer=csv.DictWriter(f, fieldnames=list(BASE));writer.writeheader()
+    writer.writerows([BASE, dict(other, response_met_sla='invalid')])
+   for format_args in [(), ('--format', 'json')]:
+    with self.subTest(format_args=format_args):
+     rejected=self.run_cli(path, '--service', 'VPN', *format_args)
+     self.assertEqual(rejected.returncode, 2)
+     self.assertEqual(rejected.stdout, '')
+     self.assertIn('Row 3:', rejected.stderr)
 if __name__=='__main__':unittest.main()
